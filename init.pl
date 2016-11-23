@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 use File::Copy;
 
-my @delfiles 	= glob('/home/user/contiki/examples/thesis/node-*.c');
+my @delfiles 	= glob('/home/user/contiki-2.7/examples/grep/node-*.c');
 for my $delfile (@delfiles) {
   system("rm", $delfile, "-f");
 }
 
-my @conffiles 	= glob('/home/user/contiki/examples/thesis/*.ncfg');
+my @conffiles 	= glob('/home/user/contiki-2.7/examples/grep/conf/*.ncfg');
 for my $conffile (@conffiles) {
   system("rm", $conffile, "-f");
 }
@@ -15,11 +15,11 @@ my @files 	= glob('/home/user/GRE*/*.ncfg');
 $k 		= 1;
 
 # Config file initial setting
-$conffilename 	= '/home/user/contiki/examples/thesis/conf';
+$conffilename 	= '/home/user/contiki-2.7/examples/grep/conf/conf';
 $confext 	= '.ncfg';
 
 # C code for each node initial setting
-$nodefilename 	= '/home/user/contiki/examples/thesis/node-';
+$nodefilename 	= '/home/user/contiki-2.7/examples/grep/node-';
 @nodedata 	= ("1-1-1", "2-2-1", "3-2-2", "4-3-1", "5-1-2", "6-3-2", "7-3-3", "8-4-1", "9-5-1", "10-4-2", "11-4-3", "12-5-2", "13-2-3", "14-3-4", "15-3-5");
 $nodeext 	= '.c';
 
@@ -57,22 +57,22 @@ for my $file (@files) {
     $nnodeTknB	= $#nodeTknB + 1;
     $nsubgTknB	= $#subgTknB + 1;
 
-    if($nnodeTknB > 0) {$temp = 'uint8_t tempn['.($nnodeTknB * 32).'] = {'.$nodeTknBS.'};'."\n";}
+    if($nnodeTknB > 0) {$temp = 'uint8_t tempn[('.$nnodeTknB.' * KEYSIZE)] = {'.$nodeTknBS.'};'."\n";}
     for ($i = 0; $i < $nnodeTknB ; $i++) {
       $temp .= 'key_mem_node['.$i.'].ID = '.$nodeTknBID[$i].";\n";
-      $temp .= 'memcpy(key_mem_node['.$i.'].Token, tempn + '.($i * 32).', KT_LENGTH * sizeof(uint8_t));'."\n";
+      $temp .= 'memcpy(key_mem_node['.$i.'].Token, tempn + ('.$i.' * KEYSIZE), KEYSIZE * sizeof(uint8_t));'."\n";
     }
 
-    if($nsubgTknB > 0) {$temp .= 'uint8_t temps['.($nsubgTknB * 32).'] = {'.$subgTknBS .'};'."\n";}
+    if($nsubgTknB > 0) {$temp .= 'uint8_t temps[('.$nsubgTknB.' * KEYSIZE)] = {'.$subgTknBS .'};'."\n";}
     for ($i = 0; $i < $nsubgTknB ; $i++) {
       $temp .= 'key_mem_subg['.$i.'].ID = '.$subgTknBID[$i].";\n";
-      $temp .= 'memcpy(key_mem_subg['.$i.'].Token, temps + '.($i * 32).', KT_LENGTH * sizeof(uint8_t));'."\n";
+      $temp .= 'memcpy(key_mem_subg['.$i.'].Token, temps + ('.$i.' * KEYSIZE), KEYSIZE * sizeof(uint8_t));'."\n";
     }
 
     while (<TEMP>) {
-      (/static uint8_t groupKey\[KT_LENGTH\] = \{(.*)\}/) && do {s/$1/$groupKey/};
-      (/static uint8_t nodeKey\[KT_LENGTH\] = \{(.*)\}/) && do {s/$1/$nodeKey/};
-      (/static uint8_t subgKey\[KT_LENGTH\] = \{(.*)\}/) && do {s/$1/$subgKey/};
+      (/static uint8_t groupKey\[KEYSIZE\] = \{(.*)\}/) && do {s/$1/$groupKey/};
+      (/static uint8_t nodeKey\[KEYSIZE\] = \{(.*)\}/) && do {s/$1/$nodeKey/};
+      (/static uint8_t subgKey\[KEYSIZE\] = \{(.*)\}/) && do {s/$1/$subgKey/};
       (/static uint32_t nodeID = (.*);/) && do {s/$1/$nodeID/};
       (/static uint32_t subgID = (.*);/) && do {s/$1/$subgID/};
       (/static uint8_t nnode = (.*);/) && do {s/$1/$nnodeTknB/;};

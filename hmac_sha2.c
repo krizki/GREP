@@ -53,7 +53,7 @@ void hmac_sha256_init(hmac_sha256_ctx *ctx, const unsigned char *key,
     } else {
         if (key_size > SHA256_BLOCK_SIZE){
             num = SHA256_DIGEST_SIZE;
-            sha256(key, key_size, key_temp);
+            sha256(key, key_size, key_temp, SHA256_DIGEST_SIZE);
             key_used = key_temp;
         } else { /* key_size > SHA256_BLOCK_SIZE */
             key_used = key;

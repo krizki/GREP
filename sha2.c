@@ -162,13 +162,16 @@ void sha256_transf(sha256_ctx *ctx, const unsigned char *message,
     }
 }
 
-void sha256(const unsigned char *message, unsigned int len, unsigned char *digest)
+void sha256(const unsigned char *message, unsigned int len, unsigned char *digest, unsigned int digest_len)
 {
     sha256_ctx ctx;
+    unsigned char temp[SHA256_DIGEST_SIZE];
 
     sha256_init(&ctx);
     sha256_update(&ctx, message, len);
-    sha256_final(&ctx, digest);
+    sha256_final(&ctx, temp);
+
+    memcpy(digest, temp, digest_len);
 }
 
 void sha256_init(sha256_ctx *ctx)
