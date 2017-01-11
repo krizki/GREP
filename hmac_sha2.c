@@ -53,16 +53,12 @@ void hmac_sha256_init(hmac_sha256_ctx *ctx, const unsigned char *key,
     } else {
         if (key_size > SHA256_BLOCK_SIZE){
             num = SHA256_DIGEST_SIZE;
-<<<<<<< Updated upstream
-            sha256(key, key_size, key_temp, SHA256_DIGEST_SIZE);
-=======
 #if ((CIPHMODE == 0) || (CIPHMODE == 1))
             sha256(key, key_size, key_temp, SHA256_DIGEST_SIZE);
 #elif CIPHMODE == 2
             sha256_hw(key, key_size, key_temp, SHA256_DIGEST_SIZE);
             printf("doang1 \n");
 #endif
->>>>>>> Stashed changes
             key_used = key_temp;
         } else { /* key_size > SHA256_BLOCK_SIZE */
             key_used = key;
