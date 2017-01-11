@@ -31,15 +31,31 @@
  * SUCH DAMAGE.
  */
 
+#include "contiki.h"
+#include "contiki-conf.h"
+#include "contiki-lib.h"
+#include "contiki-net.h"
+
 #ifndef HMAC_SHA2_H
 #define HMAC_SHA2_H
-
-#include "sha2.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#undef CIPHMODE
+#define CIPHMODE		2 	//AES = 0, SkipJack = 1, Default HW Cipher = 2
+#if ((CIPHMODE == 0) || (CIPHMODE == 1))
+  #include "sha2.h"
+#elif CIPHMODE == 2
+  #include "crypto-hw.h"
+  #include "dev/cc2538-sha2.h"
+
+  #define SHA256_DIGEST_SIZE ( 256 / 8)
+  #define SHA256_BLOCK_SIZE  ( 512 / 8)
+
+  typedef sha256_state_t sha256_ctx;
+#endif
 
 typedef struct {
     sha256_ctx ctx_inside;

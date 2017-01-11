@@ -1,11 +1,19 @@
 #include "contiki.h"
+#include "contiki-lib.h"
 #include "contiki-net.h"
+<<<<<<< Updated upstream
 #include "aes256.h"
 #include "skipjack.c"
+=======
+//#include "net/ipv6/multicast/uip-mcast6.h"
+//#include "net/ip/uip-debug.h"
+#include "net/uip-ds6.h"
+#include "net/uip-debug.h"
+>>>>>>> Stashed changes
 #include "hmac_sha2.h"
-#include "sha2.h"
 #include <stdio.h>
 
+<<<<<<< Updated upstream
 #if 0
   #include "net/ipv6/multicast/uip-mcast6.h"
   #include "net/ip/uip-debug.h"
@@ -20,6 +28,24 @@
 #elif CIPHMODE == 1
   #define KEYSIZE		10 	// In byte
   #define BLOCKSIZE		8 	// In byte 
+=======
+//#undef CIPHMODE
+//#define CIPHMODE		2 	//AES = 0, SkipJack = 1, Default HW Cipher = 2
+#if CIPHMODE == 0
+  #include "aes256.h"
+  #include "sha2.h"
+  #define KEYSIZE		32 	// In byte 
+  #define BLOCKSIZE		16 	// In byte 
+#elif CIPHMODE == 1
+  #include "skipjack.c"
+  #include "sha2.h"
+  #define KEYSIZE		10 	// In byte
+  #define BLOCKSIZE		8 	// In byte 
+#elif CIPHMODE == 2
+  #include "crypto-hw.h"
+  #define KEYSIZE		32 	// In byte
+  #define BLOCKSIZE		16 	// In byte
+>>>>>>> Stashed changes
 #endif
 
 #define ENERG_EN		0 	// 0 or 1
@@ -28,7 +54,11 @@
 #endif
 
 #define DEBUG 			DEBUG_PRINT
+<<<<<<< Updated upstream
 #define DEBUG_LOCAL		0
+=======
+#define DEBUG_LOCAL		1
+>>>>>>> Stashed changes
 #define ID_LENGTH		4 	// In byte
 #define MCAST_SINK_UDP_PORT	3001 	// Host byte order
 #define NODE_SIZE		7
@@ -83,7 +113,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
   uint8_t type		= appdata[0];
 
   // Following equation is specific to block cipher and keys length
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
   uint8_t len_inp 	= 3 * BLOCKSIZE + 2 * BLOCKSIZE * ((type == 1) || (type == 3)) - 2 * BLOCKSIZE * (type == 12);
 #elif CIPHMODE == 1
   uint8_t len_inp 	= 2 * BLOCKSIZE + BLOCKSIZE * ((type == 1) || (type == 3)) - BLOCKSIZE * (type == 12);
@@ -118,7 +152,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 
   // Set default encryption key
   memcpy(key, groupKey, KEYSIZE * sizeof(uint8_t));
+<<<<<<< Updated upstream
 
+=======
+  printf("hai5 \n");
+>>>>>>> Stashed changes
   // Processing the message
   switch (type) {
     case 1 :	// Save JM1En
@@ -170,7 +208,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 		  memcpy(inp_dec, &appdata[2 * ID_LENGTH + 1], len_inp * sizeof(uint8_t));
 		}
 		else {
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
 		  memcpy(inp_dec, &appdata[2 * ID_LENGTH + 3 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
 #elif CIPHMODE == 1
 		  memcpy(inp_dec, &appdata[2 * ID_LENGTH + 2 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
@@ -192,7 +234,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 		  memcpy(inp_dec, &appdata[ID_LENGTH + 1], len_inp * sizeof(uint8_t));
 		}
 		else {
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
 		  memcpy(inp_dec, &appdata[ID_LENGTH + 3 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
 #elif CIPHMODE == 1
 		  memcpy(inp_dec, &appdata[ID_LENGTH + 2 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
@@ -210,7 +256,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 		else {
 		  memcpy(&idtemp1, &appdata[2 + ID_LENGTH * record], sizeof(uint32_t));
 		  if (nodeID > idtemp1) {
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
 		    memcpy(inp_dec, &appdata[ID_LENGTH + 2 + 3 * BLOCKSIZE + ID_LENGTH * record], len_inp * sizeof(uint8_t));
 #elif CIPHMODE == 1
 		    memcpy(inp_dec, &appdata[ID_LENGTH + 2 + 2 * BLOCKSIZE + ID_LENGTH * record], len_inp * sizeof(uint8_t));
@@ -245,7 +295,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 		  // Get sid of the youngest compromised subgroup
 		  memcpy(&idtemp1, &appdata[ID_LENGTH + 1], sizeof(uint32_t));
 		  if (subgID > idtemp1) {
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
 		    memcpy(inp_dec, &appdata[2 * ID_LENGTH + 3 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
 #elif CIPHMODE == 1
 		    memcpy(inp_dec, &appdata[2 * ID_LENGTH + 2 * BLOCKSIZE + 1], len_inp * sizeof(uint8_t));
@@ -269,7 +323,11 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 
     case 11 :	// Encryption preparation
 		record = appdata[1];
+<<<<<<< Updated upstream
 #if CIPHMODE == 0
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 2))
+>>>>>>> Stashed changes
 		len_inp = 16 * (((ID_LENGTH * record) << 4) + 1);
 #elif CIPHMODE == 1
 		len_inp = 8 * (((ID_LENGTH * record) << 3) + 1);
@@ -285,6 +343,12 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
     aes256_decrypt_cbc(inp_dec, len_inp, key, out_dec);
 #elif CIPHMODE == 1
     doSJDecrypt(key, inp_dec, len_inp, out_dec);
+<<<<<<< Updated upstream
+=======
+#elif CIPHMODE == 2
+    //memcpy(out_dec, inp_dec, len_inp * sizeof(uint8_t));
+    aes256_decrypt_cbc_hw(inp_dec, len_inp, key, out_dec);
+>>>>>>> Stashed changes
 #endif
 
     // Display the input and output of AES CBC decryption
@@ -297,6 +361,10 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
     // Verifying Decryption resut by checking the padding
     uint8_t padlen = (uint8_t) out_dec[(len_inp) - 1];
 
+    if (padlen > 16) {
+    	printf("AES Decryption result is NOT OK with padding length %u byte(s)\n", padlen);
+    	return;
+    }
     // Copy the padding part of decryption result
     uint8_t padtemp1[16];
     memset(&padtemp1, 0, padlen * sizeof(uint8_t));
@@ -324,22 +392,29 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 
     // Calculate new Group Key except for LM1. Calculation will be done when LM2 is received
     if (type != 11) {
+<<<<<<< Updated upstream
+=======
+   //sha256_hw(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_node[(i)].Token, KEYSIZE);
+   //sha256_hw(groupKey, KEYSIZE, hmac_output, KEYSIZE);
+   //PRINTARR("HMAC INPUT: ", groupKey, KEYSIZE);
+   //PRINTARR("HMAC OUTPUT: ", hmac_output, KEYSIZE);
+>>>>>>> Stashed changes
       hmac_sha256(groupKey, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
       memcpy(groupKey, hmac_output, KEYSIZE * sizeof(uint8_t));
     }
-
+    printf("hai16 \n");
     // Calculate new subgroup key
     if ((type == 1) || (type == 4) || (type == 7) || (type == 8)) {
       hmac_sha256(subgKey, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
       memcpy(subgKey, hmac_output, KEYSIZE * sizeof(uint8_t));
     }
-
+    printf("hai17 \n");
     // Calculate new forward node token
     if ((type == 1) || (type == 3)) {
       memcpy(MToken, &out_dec[0], KEYSIZE * sizeof(uint8_t));
       hmac_sha256(MToken, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
     }
-
+    printf("hai18 \n");
     // Generating new key based on received informations
     switch (type) {
     case 1 :	// Save node nid information
@@ -348,8 +423,14 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
   		nnode++;
 #if DEBUG_LOCAL
     		goto print;
+<<<<<<< Updated upstream
 #endif
 		return;
+=======
+#else
+    		return;
+#endif
+>>>>>>> Stashed changes
 
     case 3 :	// Save subgroup sid information
   		memcpy(&key_mem_subg[nsubg].ID, &idtemp1, sizeof(uint32_t));
@@ -357,8 +438,14 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
   		nsubg++;
 #if DEBUG_LOCAL
     		goto print;
+<<<<<<< Updated upstream
 #endif
 		return;
+=======
+#else
+    		return;
+#endif
+>>>>>>> Stashed changes
 
     case 4 :	// Remove node nid information
 		memmove(&key_mem_node[record], &key_mem_node[record + 1], (nnode - record - 1) * (KEYSIZE + ID_LENGTH) * sizeof(uint8_t));
@@ -397,6 +484,7 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 		}
 #if DEBUG_LOCAL
     		goto print;
+<<<<<<< Updated upstream
 #endif
 		return;
 
@@ -406,14 +494,34 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 #endif
 		return;
     }
+=======
+#else
+    		return;
+#endif
+>>>>>>> Stashed changes
 
+    default:
+#if DEBUG_LOCAL
+    		goto print;
+#else
+    		return;
+#endif
+    }
 
 // Calculate new forward node token
 stop1:
   for(i = 0; i < nnode; i++) {
     memcpy(out_dec + KEYSIZE + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)),
 	&key_mem_node[(i)].Token, KEYSIZE * sizeof(uint8_t));
+<<<<<<< Updated upstream
     sha256(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_node[(i)].Token, KEYSIZE);
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 1))
+    sha256(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_node[(i)].Token, KEYSIZE);
+#elif CIPHMODE == 2
+    sha256_hw(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_node[(i)].Token, KEYSIZE);
+#endif
+>>>>>>> Stashed changes
   }
 
 // Calculate new forward subgroup token
@@ -421,7 +529,15 @@ stop2:
   for(i = 0; i < nsubg; i++) {
     memcpy(out_dec + KEYSIZE + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)),
 	&key_mem_subg[(i)].Token, KEYSIZE * sizeof(uint8_t));
+<<<<<<< Updated upstream
     sha256(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_subg[(i)].Token, KEYSIZE);
+=======
+#if ((CIPHMODE == 0) || (CIPHMODE == 1))
+    sha256(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_subg[(i)].Token, KEYSIZE);
+#elif CIPHMODE == 2
+    sha256_hw(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_subg[(i)].Token, KEYSIZE);
+#endif
+>>>>>>> Stashed changes
   }
 
 #if DEBUG_LOCAL
@@ -447,13 +563,25 @@ tcpip_handler(void)
   uint8_t appdataLen;
 
   if(uip_newdata()) {
+<<<<<<< Updated upstream
 #if DEBUG_LOCAL
       PRINTARR("Buffer Data: ", uip_appdata, uip_datalen());
 #endif
+=======
+>>>>>>> Stashed changes
     if(memcmp(&appdata, &uip_appdata, uip_datalen() * sizeof(uint8_t))) {
+      printf("test1b \n");
       appdata = (uint8_t *)uip_appdata;
       appdata[uip_datalen()] = 0;
       appdataLen = uip_datalen();
+<<<<<<< Updated upstream
+=======
+
+#if DEBUG_LOCAL
+      PRINTARR("Buffer Data: ", appdata, appdataLen);
+#endif
+
+>>>>>>> Stashed changes
       msg_dec(appdata, appdataLen);
     }
   }
@@ -498,7 +626,10 @@ PROCESS_THREAD(motes_process, ev, data)
       cpu_start_time = energest_type_time(ENERGEST_TYPE_CPU);
 #endif
       tcpip_handler();
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 #if ENERG_EN
       cpu_time = energest_type_time(ENERGEST_TYPE_CPU) - cpu_start_time;
       printf("Time: CPU %lu\n", cpu_time);

@@ -174,7 +174,7 @@ void sha256(const unsigned char *message, unsigned int len, unsigned char *diges
     memcpy(digest, temp, digest_len);
 }
 
-void sha256_init(sha256_ctx *ctx)
+void sha256_init_sw(sha256_ctx *ctx)
 {
     int i;
     for (i = 0; i < 8; i++) {

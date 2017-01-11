@@ -58,7 +58,7 @@ typedef struct {
 
 typedef sha256_ctx sha224_ctx;
 
-void sha256_init(sha256_ctx * ctx);
+void sha256_init_sw(sha256_ctx * ctx);
 void sha256_update(sha256_ctx *ctx, const unsigned char *message,
                    unsigned int len);
 void sha256_final(sha256_ctx *ctx, unsigned char *digest);
