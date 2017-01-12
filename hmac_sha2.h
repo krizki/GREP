@@ -43,8 +43,6 @@
 extern "C" {
 #endif
 
-#undef CIPHMODE
-#define CIPHMODE		2 	//AES = 0, SkipJack = 1, Default HW Cipher = 2
 #if ((CIPHMODE == 0) || (CIPHMODE == 1))
   #include "sha2.h"
 #elif CIPHMODE == 2

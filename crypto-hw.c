@@ -121,6 +121,9 @@ uint8_t cbc_auth_encrypt_start_hw(uint8_t key_area, void *pdata, uint16_t pdata_
     REG(AES_DMAC_CH1_DMALENGTH) = pdata_len;
   }
 
+  /* Wait for completion of the operation */
+  while(!(REG(AES_CTRL_INT_STAT) & AES_CTRL_INT_STAT_RESULT_AV));
+
   return AES_SUCCESS;
 }
 /*---------------------------------------------------------------------------*/
@@ -233,15 +236,11 @@ void aes256_decrypt_cbc_hw(uint8_t *buf, uint8_t len_buf, uint8_t *key, uint8_t 
 	uint8_t ret;
 
     ret = aes_load_keys(key, AES_KEY_STORE_SIZE_KEY_SIZE_256, 1, 0);
-    //while(ret);
-    //ret = aes_load_key(key, 0);
-    //printf("ret %d \n", ret);
-    //if (ret != 0) return;
-    //PROCESS_PAUSE();
+
+    if (ret != AES_SUCCESS) return;
     ret = cbc_auth_encrypt_start_hw(key_area, buf, len_buf);
-    //while(ret);
-    //if (ret != 0) return;
-    printf("ret %d \n", ret);
+
+    if (ret != AES_SUCCESS) return;
     memcpy(out, buf, len_buf * sizeof(uint8_t));
 
     crypto_disable();

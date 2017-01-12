@@ -3,10 +3,6 @@
 #include "contiki-net.h"
 //#include "net/ipv6/multicast/uip-mcast6.h"
 //#include "net/ip/uip-debug.h"
-#include "net/uip-ds6.h"
-#include "net/uip-debug.h"
-#include "hmac_sha2.h"
-#include <stdio.h>
 
 //#undef CIPHMODE
 //#define CIPHMODE		2 	//AES = 0, SkipJack = 1, Default HW Cipher = 2
@@ -26,13 +22,18 @@
   #define BLOCKSIZE		16 	// In byte
 #endif
 
-#define ENERG_EN		0 	// 0 or 1
+#include "net/uip-ds6.h"
+#include "net/uip-debug.h"
+#include "hmac_sha2.h"
+#include <stdio.h>
+
+#define ENERG_EN		ENERGEST_CONF_ON 	// 0 or 1
 #if ENERG_EN
   #include "sys/energest.h"
 #endif
 
-#define DEBUG 			DEBUG_PRINT
-#define DEBUG_LOCAL		1
+#define DEBUG 			DEBUG_NONE
+#define DEBUG_LOCAL		0
 #define ID_LENGTH		4 	// In byte
 #define MCAST_SINK_UDP_PORT	3001 	// Host byte order
 #define NODE_SIZE		7
@@ -64,9 +65,9 @@ static void
 PRINTARR(char* title, uint8_t* arry, uint8_t size) 
 {
   uint8_t i;
-  printf(title);			
+  printf(title);
   for (i = 0; i < size; i++)		
-    printf("%02x", arry[i]);		
+    printf("%02x", arry[i]);
   printf("\n");
 }
 /*---------------------------------------------------------------------------*/
@@ -122,7 +123,7 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 
   // Set default encryption key
   memcpy(key, groupKey, KEYSIZE * sizeof(uint8_t));
-  printf("hai5 \n");
+
   // Processing the message
   switch (type) {
     case 1 :	// Save JM1En
@@ -335,26 +336,22 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 
     // Calculate new Group Key except for LM1. Calculation will be done when LM2 is received
     if (type != 11) {
-   //sha256_hw(out_dec + (type == 8) * (appdataLen - (1 + ID_LENGTH + padlen + KEYSIZE)), 2 * KEYSIZE, key_mem_node[(i)].Token, KEYSIZE);
-   //sha256_hw(groupKey, KEYSIZE, hmac_output, KEYSIZE);
-   //PRINTARR("HMAC INPUT: ", groupKey, KEYSIZE);
-   //PRINTARR("HMAC OUTPUT: ", hmac_output, KEYSIZE);
       hmac_sha256(groupKey, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
       memcpy(groupKey, hmac_output, KEYSIZE * sizeof(uint8_t));
     }
-    printf("hai16 \n");
+
     // Calculate new subgroup key
     if ((type == 1) || (type == 4) || (type == 7) || (type == 8)) {
       hmac_sha256(subgKey, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
       memcpy(subgKey, hmac_output, KEYSIZE * sizeof(uint8_t));
     }
-    printf("hai17 \n");
+
     // Calculate new forward node token
     if ((type == 1) || (type == 3)) {
       memcpy(MToken, &out_dec[0], KEYSIZE * sizeof(uint8_t));
       hmac_sha256(MToken, KEYSIZE, refrKey, KEYSIZE, hmac_output, KEYSIZE);
     }
-    printf("hai18 \n");
+
     // Generating new key based on received informations
     switch (type) {
     case 1 :	// Save node nid information
@@ -474,7 +471,6 @@ tcpip_handler(void)
 
   if(uip_newdata()) {
     if(memcmp(&appdata, &uip_appdata, uip_datalen() * sizeof(uint8_t))) {
-      printf("test1b \n");
       appdata = (uint8_t *)uip_appdata;
       appdata[uip_datalen()] = 0;
       appdataLen = uip_datalen();
