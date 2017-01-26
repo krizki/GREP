@@ -20,11 +20,11 @@ $confext 	= '.ncfg';
 
 # C code for each node initial setting
 $nodefilename 	= '/home/user/contiki-2.7/examples/grep/node-';
-@nodedata 	= ("1-1-1", "2-2-1", "3-2-2", "4-3-1", "5-1-2", "6-3-2", "7-3-3", "8-4-1", "9-5-1", "10-4-2", "11-4-3", "12-5-2", "13-2-3", "14-3-4", "15-3-5");
+@nodedata 	= ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25");
 $nodeext 	= '.c';
 
 for my $file (@files) {
-  if($k < 16) {
+  if($k < 26) {
     $i = 0;
     $j = 0;
     $conffullname 	= $conffilename.$k.$confext;

@@ -1,6 +1,7 @@
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
+#include "dev/sys-ctrl.h"
 //#include "net/ipv6/multicast/uip-mcast6.h"
 //#include "net/ip/uip-debug.h"
 
@@ -33,7 +34,7 @@
 #endif
 
 #define DEBUG 			DEBUG_NONE
-#define DEBUG_LOCAL		0
+#define DEBUG_LOCAL		1
 #define ID_LENGTH		4 	// In byte
 #define MCAST_SINK_UDP_PORT	3001 	// Host byte order
 #define NODE_SIZE		7
@@ -118,7 +119,8 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
     if ((type == 1) || (type == 4) || (type == 7) || (type == 10)) return;
   }
   else {
-    if ((type == 2) || (type == 3) || (type == 5) || (type == 6)) return;
+    //if ((type == 2) || (type == 3) || (type == 5) || (type == 6)) return;
+    if ((type == 2) || (type == 5) || (type == 6)) return;
   }
 
   // Set default encryption key
@@ -302,7 +304,7 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
       PRINTARR("Decryption Output: ", out_dec, len_inp);
 #endif
 
-    // Verifying Decryption resut by checking the padding
+    // Verifying Decryption result by checking the padding
     uint8_t padlen = (uint8_t) out_dec[(len_inp) - 1];
 
     if (padlen > 16) {
@@ -325,10 +327,10 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 #endif
 
     int verify = memcmp(padtemp1, padtemp2, padlen * sizeof(uint8_t));
-    #if DEBUG_LOCAL
+#if DEBUG_LOCAL
     if (verify == 0) printf("AES Decryption result is OK with padding length %u byte(s)\n", padlen);
     else printf("AES Decryption result is NOT OK with padding length %u byte(s)\n", padlen);
-    #endif
+#endif
 
     // Extracting Refresh Key
     if (type == 8) memcpy(&refrKey, &out_dec[len_inp - padlen - KEYSIZE], KEYSIZE * sizeof(uint8_t));
