@@ -4,7 +4,7 @@
 #include "dev/sys-ctrl.h"
 //#include "net/ipv6/multicast/uip-mcast6.h"
 //#include "net/ip/uip-debug.h"
-/*
+
 //#undef CIPHMODE
 //#define CIPHMODE		2 	//AES = 0, SkipJack = 1, Default HW Cipher = 2
 #if CIPHMODE == 0
@@ -22,9 +22,9 @@
   #define KEYSIZE		32 	// In byte
   #define BLOCKSIZE		16 	// In byte
 #endif
-*/
+
 #include "net/uip-ds6.h"
-//#include "hmac_sha2.h"
+#include "hmac_sha2.h"
 #include <stdio.h>
 
 /*
@@ -34,13 +34,13 @@
 #endif
 */
 #define DEBUG 			DEBUG_NONE
-//#define DEBUG_GREP		0
+#define DEBUG_GREP		0
 #include "net/uip-debug.h"
-//#define ID_LENGTH		4 	// In byte
+#define ID_LENGTH		4 	// In byte
 #define MCAST_SINK_UDP_PORT	3001 	// Host byte order
-//#define NODE_SIZE		7
-//#define SUBG_SIZE		7
-/*
+#define NODE_SIZE		7
+#define SUBG_SIZE		7
+
 static uint8_t inp_dec[240];
 static uint8_t counter = 1;
 static uint8_t nnode = xxxx;
@@ -51,16 +51,14 @@ static uint8_t nodeKey[KEYSIZE] = {xxxx}; 	// Node Key
 static uint8_t subgKey[KEYSIZE] = {xxxx}; 	// Subgroup Key 
 static uint32_t nodeID = xxxx;
 static uint32_t subgID = xxxx;
-*/
+
 static struct uip_udp_conn *motes_conn;
-/*
 //typedef 
 struct key_material{
 	uint32_t	ID;
 	uint8_t		Token[KEYSIZE];
 };
 struct key_material key_mem_node[NODE_SIZE], key_mem_subg[SUBG_SIZE];
-*/
 /*---------------------------------------------------------------------------*/
 PROCESS(motes_process, "Multicast Sink");
 AUTOSTART_PROCESSES(&motes_process);
@@ -77,16 +75,13 @@ PRINTARR(char* title, uint8_t* arry, uint8_t size)
 }
 */
 /*---------------------------------------------------------------------------*/
-/*
 static void
 key_material_init(void)
 {
   // Token Backward Initiation
 //here
 }
-*/
 /*---------------------------------------------------------------------------*/
-/*
 static void
 msg_dec(uint8_t* appdata, uint8_t appdataLen)
 { 
@@ -454,7 +449,7 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 #endif
     }
 
-
+/*
     // Generating new key based on received informations
     switch (type) {
     case 1 :	// Save node nid information
@@ -527,7 +522,7 @@ msg_dec(uint8_t* appdata, uint8_t appdataLen)
 #else
     		return;
 #endif
-    }
+    }*/
 
 // Calculate new forward node token
 stop1:
@@ -568,7 +563,6 @@ print:
   }
 #endif
 }
-*/
 /*---------------------------------------------------------------------------*/
 static void
 tcpip_handler(void)
@@ -586,7 +580,7 @@ tcpip_handler(void)
       PRINTARR("Buffer Data: ", appdata, appdataLen);
 #endif
 
-      //msg_dec(appdata, appdataLen);
+      msg_dec(appdata, appdataLen);
     }
   }
 }
@@ -616,7 +610,7 @@ PROCESS_THREAD(motes_process, ev, data)
   set_addr();
   motes_conn = udp_new(NULL, UIP_HTONS(0), NULL);
   udp_bind(motes_conn, UIP_HTONS(MCAST_SINK_UDP_PORT));
-  //key_material_init();
+  key_material_init();
 
 #if DEBUG_GREP
     PRINTARR("Current Group Key: ", groupKey, KEYSIZE);
