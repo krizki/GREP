@@ -1,4 +1,4 @@
-$(shell perl init.pl)
+GENFILE_RESULT:=$(shell perl init.pl)
 
 CFLAGS+= -DUIP_CONF_IPV6=1
 
