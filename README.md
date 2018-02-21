@@ -131,6 +131,7 @@ picocom -b 115200 -r -l /dev/ttyUSB0 --imap lfcrlf | tee borderrouter.txt
 * For specific board, the config file can be found under /platform
 
 E.g. contiki-default-conf.h in /platform/sky
+
 2. CIPHMODE is the flag used to specify the cipher to be used (AES Software or SJ or AES Hardware). CIPHMODE can be found in contiki-default-conf.h and the code (GREP, Border Router)
 ```
 /examples/grep/contiki-default-conf.h:#undef CIPHMODE
